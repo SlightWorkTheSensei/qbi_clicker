@@ -1,0 +1,9 @@
+.gitattributes# Explicitly declare Go and Python as main languages
+*.go linguist-language=Go
+
+# Prevent frontend files from skewing the language stats
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
+*.json linguist-detectable=false
+*.md linguist-detectable=false
