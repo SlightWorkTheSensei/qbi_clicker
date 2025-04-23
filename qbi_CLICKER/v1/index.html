@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clicker Bot</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            margin-bottom: 30px;
+            padding: 10px;
+            border-bottom: 2px solid #0f0;
+        }
+        button, select {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            color: #0f0;
+            background: #000;
+            border: 2px solid #0f0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        button:hover, select:hover {
+            background: #0f0;
+            color: #000;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid #0f0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .circular-button {
+            display: inline-block;
+            margin: 20px auto;
+            width: 150px;
+            height: 150px;
+            line-height: 150px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            background: #0f0;
+            border: 2px solid #0f0;
+            border-radius: 50%;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        .circular-button:hover {
+            background: #000;
+            color: #0f0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>qbi Clicker</h1>
+    </header>
+    <div class="container">
+        <label for="interval">Select Interval:</label>
+        <select id="interval">
+            <option value="250">250 ms</option>
+            <option value="500">500 ms</option>
+            <option value="750">750 ms</option>
+            <option value="1000">1 second</option>
+            <option value="5000">5 seconds</option>
+            <option value="30000">30 seconds</option>
+            <option value="60000">1 minute</option>
+            <option value="300000">5 minutes</option>
+            <option value="600000">10 minutes</option>
+            <option value="900000">15 minutes</option>
+            <option value="1800000">30 minutes</option>
+            <option value="3600000">1 hour</option>
+        </select>
+        <br>
+        <button onclick="startClicking()">Start</button>
+        <button onclick="stopClicking()">Stop</button>
+        <p id="status">Status: Ready</p>
+    </div>
+    <div class="container">
+        <div id="circularButton" class="circular-button">0.000 s</div>
+    </div>
+
+    <script>
+        let lastClickTime = 0;
+        let timerInterval;
+
+        document.getElementById('circularButton').addEventListener('click', () => {
+            lastClickTime = performance.now(); // Record current time
+            document.getElementById('circularButton').innerText = `0.000 s`;
+        });
+
+        function updateTimer() {
+            if (lastClickTime > 0) {
+                const elapsedTime = (performance.now() - lastClickTime) / 1000; // Calculate elapsed time
+                document.getElementById('circularButton').innerText = `${elapsedTime.toFixed(3)} s`;
+            }
+        }
+
+        async function startClicking() {
+            const interval = document.getElementById("interval").value;
+            await fetch(`/set-interval?interval=${interval}`);
+            const response = await fetch('/start');
+            const status = await response.text();
+            document.getElementById("status").innerText = `Status: ${status}`;
+        }
+
+        async function stopClicking() {
+            const response = await fetch('/stop');
+            const status = await response.text();
+            document.getElementById("status").innerText = `Status: ${status}`;
+        }
+
+        // Start timer update loop
+        timerInterval = setInterval(updateTimer, 100);
+    </script>
+</body>
+</html>
